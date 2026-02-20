@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@ai-sdk/devtools':
+        specifier: ^0.0.15
+        version: 0.0.15
       '@ai-sdk/google':
         specifier: ^3.0.22
         version: 3.0.22(zod@3.25.76)
@@ -128,6 +131,10 @@ importers:
         version: 5.9.3
 
 packages:
+
+  '@ai-sdk/devtools@0.0.15':
+    resolution: {integrity: sha512-zRF+ClRh0fcmvoKclOcmy2hmTDN48ZfHD3y1fC3Lx0vIYaX55uywssiyaA18WlV2mD+N9H4fgPxq+9JeGfMGlQ==}
+    hasBin: true
 
   '@ai-sdk/gateway@3.0.34':
     resolution: {integrity: sha512-ZS1dWai5DINQOv3bpNi3ua9+yt3jnRaux3CwEr/ai9qETp6T+2wcpZyw+0jUHo1He/Lznw//AQh4zhdwHnTWrg==}
@@ -4475,6 +4482,12 @@ packages:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
 
 snapshots:
+
+  '@ai-sdk/devtools@0.0.15':
+    dependencies:
+      '@ai-sdk/provider': 3.0.8
+      '@hono/node-server': 1.19.9(hono@4.11.7)
+      hono: 4.11.7
 
   '@ai-sdk/gateway@3.0.34(zod@3.25.76)':
     dependencies:
