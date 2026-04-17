@@ -3,12 +3,15 @@ import { ChatMessages } from './chat-messages'
 import { ChatEmptyState } from './chat-empty-state'
 import { useChat } from '@ai-sdk/react'
 import { ChatTextarea } from './chat-textarea'
+import type { MyUIMessage } from '@/lib/types'
+
 
 export const ChatPage = () => {
-    const { messages, sendMessage, status } = useChat();
+    const { messages, sendMessage, status, error  } = useChat<MyUIMessage>();
+
 
     const isEmpty = messages.length <= 0
-    console.log(isEmpty, messages.length)
+    console.log( isEmpty, messages.length)
 
     return (
         <div className="h-full w-full flex items-center justify-center">
@@ -19,7 +22,7 @@ export const ChatPage = () => {
                     {/* Messages Container - Scrollable */}
                     <div className="flex-1 hide-scrollbar w-full overflow-y-auto px-4 py-6">
                             {/* loop of user and model messages */}
-                            <ChatMessages messages={messages} />
+                            <ChatMessages  messages={messages}  />
                     </div>
 
                     {/* Input Area - Sticky at Bottom */}

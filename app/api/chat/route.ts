@@ -1,9 +1,9 @@
 // import { getModelCookie } from '@/lib/models';
 // import { createOpenRouter } from '@openrouter/ai-sdk-provider';
-import { convertToModelMessages, InferUITools, stepCountIs, streamText, tool, type UIMessage } from 'ai';
+import { convertToModelMessages, createUIMessageStream, createUIMessageStreamResponse, stepCountIs, streamText, type UIMessage } from 'ai';
 import { google } from '@ai-sdk/google';
-import z from 'zod'
-import { myTools } from '@/lib/tools';
+import {  myToolSet } from '@/lib/tools';
+import type { MyUIMessage } from '@/lib/types';
 
 
 // const openrouter = createOpenRouter({
@@ -16,11 +16,7 @@ import { myTools } from '@/lib/tools';
 
 const model = google('gemini-2.5-flash');
 
-export type MyUIMessage = UIMessage<
-    never,
-    never,
-    InferUITools<typeof myTools>
->
+export type { MyUIMessage } from '@/lib/types';
 
 
 
@@ -29,14 +25,26 @@ export async function POST(req: Request) {
 
     // const modelId = await getModelCookie();
     // console.dir({ messages })
-    const result = streamText({
-        model: model,
-        system: 'You are a helpful assistant.',
-        messages: await convertToModelMessages(messages),
-        tools: myTools,
-        stopWhen: [stepCountIs(10)]
+    const convertMessages = await convertToModelMessages(messages);
+
+    const stream = createUIMessageStream<MyUIMessage>({
+        execute: async ({ writer }) => {
+
+            const result = streamText({
+                model,
+                messages: convertMessages,
+                system: "You are a helpful assistant",
+                tools: myToolSet,
+                stopWhen: stepCountIs(10)
+            });
+
+            writer.merge(result.toUIMessageStream())
+        }
+    })
+
+
+
+    return createUIMessageStreamResponse({
+        stream,
     });
-
-    return result.toUIMessageStreamResponse();
-
 }

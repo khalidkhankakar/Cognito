@@ -1,6 +1,8 @@
-import { tool } from "ai";
+import { InferUITools, tool, TypedToolCall, TypedToolResult } from "ai";
 import z from 'zod'
-export const myTools = {
+
+
+export const myToolSet = {
     weather: tool({
         description: 'Get the weather of a location',
         inputSchema: z.object({
@@ -26,5 +28,10 @@ export const myTools = {
             }
         }
     }),
-
 }
+
+
+export type MyToolCall = TypedToolCall<typeof myToolSet>;
+export type MyToolResult = TypedToolResult<typeof myToolSet>;
+
+export type MyUITools = InferUITools<typeof myToolSet>;

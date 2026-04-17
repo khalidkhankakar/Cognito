@@ -10,19 +10,23 @@ import {
 } from "@/components/ui/dropdown-menu"
 import Image from "next/image"
 import { MODELS } from "@/lib/constant"
-import { setModelCookie } from "@/lib/models"
-
-// const model = await getModelCookie()
+import { getModelCookie, setModelCookie } from "@/lib/models"
 
 export function ModelSwitcher() {
-
   const [activeModel, setActiveModel] = React.useState<{id: string, name: string, logo: string}>(MODELS[0])
 
-  
+  React.useEffect(() => {
+    const initModel = async () => {
+      const modelId = await getModelCookie();
+      const model = MODELS.find(m => m.id === modelId) || MODELS[0];
+      setActiveModel(model);
+    };
+    initModel();
+  }, []);
+
   const changeModel = (model:{id: string, name: string, logo: string}) => {
     setModelCookie(model.id)
     setActiveModel(model)
-
   }
   
 

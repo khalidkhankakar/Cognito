@@ -39,26 +39,45 @@ export const ChatTextarea = ({ sendMessage, status }: ChatTextareaProps) => {
     }
   }
 
+  const filePreviews = React.useMemo(() => {
+    if (!files) return [];
+    return files.map((file) => ({
+      file,
+      url: URL.createObjectURL(file),
+    }));
+  }, [files]);
+
+  // Clean up object URLs when previews change or component unmounts
+  React.useEffect(() => {
+    return () => {
+      filePreviews.forEach((preview) => URL.revokeObjectURL(preview.url));
+    };
+  }, [filePreviews]);
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+    e.preventDefault();
 
-    if (files) {
+    const trimmedValue = value.trim();
+    if (!trimmedValue && (!files || files.length === 0)) return;
 
+    if (files && files.length > 0) {
       const dataURLs = await convertFilesToDataURLs(files);
-
       await sendMessage({
-        parts: [{ type: 'text', text: value },
-        ...dataURLs
-        ]
+        parts: [
+          ...(trimmedValue ? [{ type: 'text' as const, text: trimmedValue }] : []),
+          ...dataURLs,
+        ],
       });
+    } else if (trimmedValue) {
+      await sendMessage({ text: trimmedValue });
     }
 
-    if (value.trim()) {
-      await sendMessage({ text: value });
-      setValue('');
+    setValue('');
+    setFiles(null);
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
     }
-
-  }
+  };
 
   function handleSelectFiles() {
     if (inputRef.current) {
@@ -75,24 +94,23 @@ export const ChatTextarea = ({ sendMessage, status }: ChatTextareaProps) => {
   function removeFile(file: File) {
     if (files) {
       const newFiles = files.filter((f) => f.name !== file.name)
-      setFiles(newFiles)
+      setFiles(newFiles.length > 0 ? newFiles : null)
     }
   }
-  console.log({ files })
 
   return (
     <form onSubmit={handleSubmit} className="w-full space-y-2 border-2 shadow-[0_0_40px_rgba(0,0,0,0.1)] p-2 flex-1 max-w-3xl rounded-2xl">
       <div className='flex gap-1.5 flex-wrap'>
         {/* files all  */}
-        {files && files.length > 0 && files.map((file, index) => (
+        {filePreviews.length > 0 && filePreviews.map((preview, index) => (
           <div key={index} className="flex justify-center size-12 group relative bg-primary  rounded-lg gap-1.5 items-center">
             {/* show cross icon to remove */}
-            <div onClick={() => removeFile(file)} className='top-1 right-1 opacity-0 group-hover:opacity-100 absolute rounded-2xl bg-white/80'>
+            <div onClick={() => removeFile(preview.file)} className='top-1 right-1 opacity-0 group-hover:opacity-100 absolute rounded-2xl bg-white/80 z-10'>
               <X className=" size-4  cursor-pointer " />
             </div>
 
-            {file.type.startsWith('image/') ? (
-              <Image src={URL.createObjectURL(file)} alt={file.name} className="size-full  rounded-lg" width={50} height={50} />
+            {preview.file.type.startsWith('image/') ? (
+              <Image src={preview.url} alt={preview.file.name} className="size-full  rounded-lg object-cover" width={50} height={50} />
             ) : (
 
               <File className=" text-gray-200 rounded-lg" />

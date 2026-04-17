@@ -6,12 +6,13 @@ import { Badge } from '../ui/badge'
 import { Spinner } from '../ui/spinner'
 import { AlertCircle, CheckCircle2, Clock, ChevronDown } from 'lucide-react'
 import { useState } from 'react'
+import { DynamicToolUIPart } from 'ai';
 
 interface ChatMessagesProps {
     messages: MyUIMessage[]
 }
 
-const getStateConfig = (state: string) => {
+const getStateConfig = (state:DynamicToolUIPart['state']) => {
     switch (state) {
         case 'input-streaming':
             return {
@@ -56,12 +57,13 @@ const getStateConfig = (state: string) => {
     }
 };
 
-const renderToolCard = (part: any, index: number) => {
+
+const renderToolCard = (part: DynamicToolUIPart, index: number) => {
     return <ToolCard part={part} index={index} />
 };
 
 interface ToolCardProps {
-    part: any;
+    part: DynamicToolUIPart;
     index: number;
 }
 
@@ -123,7 +125,7 @@ const ToolCard = ({ part, index }: ToolCardProps) => {
                             <h4 className="text-xs font-semibold text-gray-600 mb-2 uppercase">Output</h4>
                             <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-3 border border-green-200 dark:border-green-700/30">
                                 <pre className="text-xs overflow-x-auto text-green-900 dark:text-green-100">
-                                    <code>{JSON.stringify(part.output, null, 2)}</code>
+                                    <code>{`${JSON.stringify(part.output, null, 2)}`}</code>
                                 </pre>
                             </div>
                         </div>
@@ -159,12 +161,10 @@ export const ChatMessages = ({ messages }: ChatMessagesProps) => {
                             switch (part.type) {
                                 case 'text':
                                     return <MarkdownRenderer key={index} content={part.text} />
-                                case 'tool-weather':
-                                    return renderToolCard(part, index);
                                 default:
                                     // Handle other tool types dynamically
                                     if (part.type.startsWith('tool-')) {
-                                        return renderToolCard(part, index);
+                                        return renderToolCard(part as DynamicToolUIPart, index);
                                     }
                                     return null;
                             }
