@@ -1,8 +1,11 @@
 import { InferUITools, tool, TypedToolCall, TypedToolResult } from "ai";
 import z from 'zod'
+import { githubMCPClient } from "./mcp";
 
+const githubTools = await githubMCPClient.tools();
 
 export const myToolSet = {
+    ...githubTools,
     weather: tool({
         description: 'Get the weather of a location',
         inputSchema: z.object({

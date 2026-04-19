@@ -1,9 +1,10 @@
 // import { getModelCookie } from '@/lib/models';
-// import { createOpenRouter } from '@openrouter/ai-sdk-provider';
+import { createOpenRouter } from '@openrouter/ai-sdk-provider';
 import { convertToModelMessages, createUIMessageStream, createUIMessageStreamResponse, stepCountIs, streamText, type UIMessage } from 'ai';
 import { google } from '@ai-sdk/google';
 import {  myToolSet } from '@/lib/tools';
 import type { MyUIMessage } from '@/lib/types';
+import { githubMCPClient } from '@/lib/mcp';
 
 
 // const openrouter = createOpenRouter({
@@ -14,7 +15,10 @@ import type { MyUIMessage } from '@/lib/types';
 // tngtech/deepseek-r1t2-chimera:free  -OK
 // openrouter/free  -OK
 
+
+
 const model = google('gemini-2.5-flash');
+// const model = openrouter('openrouter/free');
 
 export type { MyUIMessage } from '@/lib/types';
 
@@ -39,8 +43,12 @@ export async function POST(req: Request) {
             });
 
             writer.merge(result.toUIMessageStream())
+        },
+        onFinish: async () => {
+        //    await githubMCPClient.close();
         }
-    })
+    },
+)
 
 
 

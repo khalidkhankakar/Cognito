@@ -11,8 +11,10 @@
   "dependencies": {
     "@ai-sdk/devtools": "^0.0.15",
     "@ai-sdk/google": "^3.0.22",
+    "@ai-sdk/mcp": "^1.0.36",
     "@ai-sdk/react": "^3.0.73",
     "@base-ui/react": "^1.1.0",
+    "@modelcontextprotocol/sdk": "^1.29.0",
     "@openrouter/ai-sdk-provider": "^2.1.1",
     "ai": "^6.0.71",
     "class-variance-authority": "^0.7.1",

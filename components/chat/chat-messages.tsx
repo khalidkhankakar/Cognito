@@ -58,23 +58,23 @@ const getStateConfig = (state:DynamicToolUIPart['state']) => {
 };
 
 
-const renderToolCard = (part: DynamicToolUIPart, index: number) => {
-    return <ToolCard part={part} index={index} />
-};
 
 interface ToolCardProps {
-    part: DynamicToolUIPart;
-    index: number;
+    part: DynamicToolUIPart & {input: string};
 }
 
-const ToolCard = ({ part, index }: ToolCardProps) => {
+const ToolCard = ({ part}: ToolCardProps) => {
+
     const [isExpanded, setIsExpanded] = useState(false);
     const stateConfig = getStateConfig(part.state);
     const IconComponent = stateConfig.icon;
     const toolName = part.type.replace('tool-', '');
 
+    const stringInput = typeof part.input === 'string' ? part.input : JSON.stringify(part.input)
+
+    
     return (
-        <Card key={index} className="w-full border-l-4 border-l-blue-500 cursor-pointer hover:shadow-md transition-shadow">
+        <Card className="w-full border-l-4 border-l-blue-500 cursor-pointer hover:shadow-md transition-shadow">
             <CardHeader 
                 className="pb-3"
                 onClick={() => setIsExpanded(!isExpanded)}
@@ -113,7 +113,7 @@ const ToolCard = ({ part, index }: ToolCardProps) => {
                             <h4 className="text-xs font-semibold text-gray-600 mb-2 uppercase">Input</h4>
                             <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-3 border border-gray-200 dark:border-gray-700">
                                 <pre className="text-xs overflow-x-auto">
-                                    <code>{JSON.stringify(part.input, null, 2)}</code>
+                                    <code>{stringInput}</code>
                                 </pre>
                             </div>
                         </div>
@@ -164,7 +164,8 @@ export const ChatMessages = ({ messages }: ChatMessagesProps) => {
                                 default:
                                     // Handle other tool types dynamically
                                     if (part.type.startsWith('tool-')) {
-                                        return renderToolCard(part as DynamicToolUIPart, index);
+                                        return <ToolCard part={part as DynamicToolUIPart} key={index} />
+                                        
                                     }
                                     return null;
                             }
